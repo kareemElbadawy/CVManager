@@ -1,184 +1,228 @@
-# CVManager API
+# CV Manager API
 
-This repository contains the backend API for **CVManager** system, which allows users to create, manage, and update CVs. The application is built using **.NET Core** and follows the **Onion Architecture** for better maintainability and separation of concerns.
+## Description
+
+The CV Manager API is designed to manage CV (Curriculum Vitae) information efficiently. It follows the Onion Architecture, which promotes a clean separation of concerns, maintainability, and testability. This API provides endpoints to create, read, update, and delete CVs along with associated personal and experience information.
 
 ## Table of Contents
-- [Project Overview](#project-overview)
-- [Technologies](#technologies)
-- [Setup Instructions](#setup-instructions)
-- [Directory Structure](#directory-structure)
-- [API Endpoints](#api-endpoints)
-- [Authentication](#authentication)
-- [Error Handling](#error-handling)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
 
-## Project Overview
+1. [Architecture](#architecture)
+2. [Installation](#installation)
+3. [Usage](#usage)
+   - [API Endpoints](#api-endpoints)
+   - [Example Requests](#example-requests)
+   - [Example Responses](#example-responses)
+4. [Contributing](#contributing)
+5. [License](#license)
+6. [Contact](#contact)
 
-The **CVManager API** provides endpoints for managing CV data. It is part of the **CVManager System**, which helps users create, store, and update personal CVs. The API exposes RESTful endpoints for managing entities like personal information, experience information, and CV details.
+## Architecture
 
-## Technologies
+This project follows the Onion Architecture pattern which includes the following layers:
 
-- **.NET 6.0** (or latest stable version)
-- **Onion Architecture**: The project is organized into several layers:
-  - **Core**: Contains domain models and interfaces.
-  - **Application**: Contains application logic and services.
-  - **Infrastructure**: Contains implementations for data access and external services.
-  - **API**: Contains the API controllers and endpoints.
-- **Entity Framework Core**: For interacting with the database.
-- **Swagger**: For API documentation and testing.
-- **Automapper**: For object-to-object mapping.
-- **MediatR**: For implementing the CQRS pattern.
-- **JWT**: For authentication and authorization.
+1. **Core**: Contains the domain entities and domain logic.
+2. **Application**: Handles the application logic and coordinates the domain.
+3. **Infrastructure**: Provides technical capabilities like data access, messaging, etc.
+4. **API**: The entry point for the application, exposing the endpoints for interaction.
 
-## Setup Instructions
+### Layers and Dependencies
+
+- **Core Layer**: Independent of any other layer.
+- **Application Layer**: Depends on the Core Layer.
+- **Infrastructure Layer**: Depends on the Application Layer and Core Layer.
+- **API Layer**: Depends on all other layers.
+
+## Installation
 
 ### Prerequisites
-- Install **.NET 6.0 SDK** (or the appropriate version if using a different version).
-- Install **SQL Server** or **SQL Server Express** for the database.
-- You may also use **Docker** to run the database container.
 
-### Clone the Repository
-1. Clone the repository to your local machine:
+- Node.js and npm installed on your machine.
+- MongoDB or any other database if required.
+- Angular CLI for the front-end application.
+
+### Installing
+
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/kareemElbadawy/CVManager-Api.git
    cd CVManager-Api
-Configure Database Connection
-Open appsettings.json and configure your database connection string under the ConnectionStrings section.
-
-Example for SQL Server:
-
-json
-Copy code
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost;Database=CVManagerDb;User Id=sa;Password=yourpassword;"
-}
-Alternatively, you can configure the connection string through environment variables for added security.
-
-Apply Migrations
-Run the following command to apply migrations to the database:
-bash
-Copy code
-dotnet ef database update
-Run the Application
-Build and run the application:
+Install dependencies:
 
 bash
-Copy code
-dotnet run
-The API will be available at https://localhost:5001 (default, can be configured in launchSettings.json).
+npm install
+Set up environment variables: Create a .env file in the root directory and add the following variables:
 
-To verify, open your browser and navigate to:
+env
+DATABASE_URL=mongodb://localhost:27017/cv-manager
+PORT=3000
+Start the server:
 
-API Documentation: https://localhost:5001/swagger
-Health Check Endpoint: https://localhost:5001/api/health
-Directory Structure
 bash
-Copy code
-CVManager-Api
-├── Core
-│   ├── Entities
-│   ├── Interfaces
-│   └── ValueObjects
-├── Application
-│   ├── DTOs
-│   ├── Interfaces
-│   └── Services
-├── Infrastructure
-│   ├── Data
-│   ├── Repositories
-│   └── Services
-└── API
-    ├── Controllers
-    ├── Filters
-    └── Helpers
-Core
-Contains business logic, domain models, and interfaces for repositories and services.
-Application
-Contains application logic, such as use cases and service implementations.
-Infrastructure
-Contains implementation details such as database contexts, migrations, and external service integrations.
-API
-Contains controllers, routes, middleware, and other HTTP-related logic.
+npm start
+Usage
 API Endpoints
-CV Endpoints
-Create CV
-POST /api/cv
-Request body:
+Create a CV
+URL: /api/cvs
+
+Method: POST
+
+Request Body:
+
 json
-Copy code
 {
   "name": "John Doe",
-  "personalInformation": { ... },
-  "experienceInformation": { ... }
+  "personalInformation": {
+    "fullName": "John Doe",
+    "cityName": "New York",
+    "email": "john.doe@example.com",
+    "mobileNumber": "1234567890"
+  },
+  "experienceInformation": {
+    "companyName": "TechCorp",
+    "city": "New York",
+    "companyField": "Software Development"
+  }
 }
 Response:
+
 json
-Copy code
 {
   "id": 1,
   "name": "John Doe",
-  "personalInformation": { ... },
-  "experienceInformation": { ... }
+  "personalInformation": {
+    "fullName": "John Doe",
+    "cityName": "New York",
+    "email": "john.doe@example.com",
+    "mobileNumber": "1234567890"
+  },
+  "experienceInformation": {
+    "companyName": "TechCorp",
+    "city": "New York",
+    "companyField": "Software Development"
+  }
 }
-Update CV
-PUT /api/cv/{id}
-Request body:
+Get All CVs
+URL: /api/cvs
+
+Method: GET
+
+Response:
+
 json
-Copy code
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "personalInformation": {
+      "fullName": "John Doe",
+      "cityName": "New York",
+      "email": "john.doe@example.com",
+      "mobileNumber": "1234567890"
+    },
+    "experienceInformation": {
+      "companyName": "TechCorp",
+      "city": "New York",
+      "companyField": "Software Development"
+    }
+  },
+  // More CVs...
+]
+Get a Single CV
+URL: /api/cvs/:id
+
+Method: GET
+
+Response:
+
+json
+{
+  "id": 1,
+  "name": "John Doe",
+  "personalInformation": {
+    "fullName": "John Doe",
+    "cityName": "New York",
+    "email": "john.doe@example.com",
+    "mobileNumber": "1234567890"
+  },
+  "experienceInformation": {
+    "companyName": "TechCorp",
+    "city": "New York",
+    "companyField": "Software Development"
+  }
+}
+Update a CV
+URL: /api/cvs/:id
+
+Method: PUT
+
+Request Body:
+
+json
+{
+  "name": "Jane Doe",
+  "personalInformation": {
+    "fullName": "Jane Doe",
+    "cityName": "San Francisco",
+    "email": "jane.doe@example.com",
+    "mobileNumber": "0987654321"
+  },
+  "experienceInformation": {
+    "companyName": "WebSolutions",
+    "city": "San Francisco",
+    "companyField": "Web Development"
+  }
+}
+Response:
+
+json
 {
   "id": 1,
   "name": "Jane Doe",
-  "personalInformation": { ... },
-  "experienceInformation": { ... }
+  "personalInformation": {
+    "fullName": "Jane Doe",
+    "cityName": "San Francisco",
+    "email": "jane.doe@example.com",
+    "mobileNumber": "0987654321"
+  },
+  "experienceInformation": {
+    "companyName": "WebSolutions",
+    "city": "San Francisco",
+    "companyField": "Web Development"
+  }
 }
-Response:
-json
-Copy code
-{
-  "message": "CV updated successfully."
-}
-Get CV by ID
-GET /api/cv/{id}
-Response:
-json
-Copy code
-{
-  "id": 1,
-  "name": "John Doe",
-  "personalInformation": { ... },
-  "experienceInformation": { ... }
-}
-Delete CV
-DELETE /api/cv/{id}
-Response:
-json
-Copy code
-{
-  "message": "CV deleted successfully."
-}
-Health Check
-GET /api/health
-Response:
-json
-Copy code
-{
-  "status": "Healthy"
-}
-Authentication
-This API uses JWT tokens for authentication.
-To authenticate, pass the Authorization header with the value Bearer <token> in your requests.
-Example:
-bash
-Copy code
-curl -X GET https://localhost:5001/api/cv -H "Authorization: Bearer <token>"
-Error Handling
-The API uses standard HTTP status codes to indicate the result of API requests.
+Delete a CV
+URL: /api/cvs/:id
 
-200 OK: The request was successful.
-201 Created: A resource was successfully created.
-400 Bad Request: The request was invalid.
-401 Unauthorized: The user is not authenticated or authorized.
-404 Not Found: The requested resource was not found.
-500 Internal Server Error: An error occurred on the server.
+Method: DELETE
+
+Response:
+
+json
+{
+  "message": "CV deleted successfully"
+}
+Contributing
+Fork the repository.
+
+Create your feature branch: git checkout -b feature/my-new-feature.
+
+Commit your changes: git commit -m 'Add some feature'.
+
+Push to the branch: git push origin feature/my-new-feature.
+
+Submit a pull request.
+
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+Contact
+For any inquiries, you can reach us at:
+
+Email: support@cvmanager.com
+
+Website: CV Manager
+
+GitHub: CV Manager GitHub
+
+
+Feel free to customize further based on your project's specific needs or preferences! If you need any additional sections or changes, just let me know.
